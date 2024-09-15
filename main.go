@@ -26,7 +26,7 @@ func main() {
 	// Creat a server with tcp protocol and a choosen port
 	listner, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		fmt.Println("We can't creat the server check the code")
+		fmt.Println("We can't creat the server check the port or the check")
 		return
 	}
 	fmt.Println("Listening on the port :" + port)
@@ -68,6 +68,7 @@ func CheckCommand() string {
 func Checklettersunder32(users map[net.Conn]string, s []byte) bool {
 	for _, char := range s {
 		if char < 32 {
+			fmt.Println("yes")
 			return true
 		}
 	}
@@ -105,7 +106,7 @@ func CheckNames(connection net.Conn, users map[net.Conn]string) []byte {
 	if err1 != nil {
 		temp = CheckNames(connection, users)
 	}
-	fmt.Println(string(temp),name_len)
+	fmt.Println(string(temp), name_len)
 	return temp
 }
 
@@ -125,7 +126,7 @@ func HandelConnect(connection net.Conn, nc *NC) {
 		nc.Members[connection] = string(name)
 		connection.Write([]byte(Archive))
 		nc.mutex.Unlock()
-
+		fmt.Println(connection.RemoteAddr().String())
 		for {
 			text := make([]byte, 10000)
 			PrintTimeFormat(nc.Members)
@@ -142,9 +143,9 @@ func HandelConnect(connection net.Conn, nc *NC) {
 				return
 			}
 			if Checklettersunder32(nil, text[:text_len-1]) {
-				for connect := range nc.Members{
+				for connect := range nc.Members {
 					if connect.RemoteAddr() != connection.RemoteAddr() {
-						connect.Write([]byte("\n"))
+						connect.Write([]byte("Invalid message from :" + string(name) + "\n"))
 					}
 				}
 				continue
